@@ -1,14 +1,12 @@
 "use client";
-
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { mangas } from "@/lib/data";
+import { Manga } from "@/lib/types";
 
-export default function SearchBar() {
+export default function SearchBar({ mangas }: { mangas: Manga[] }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
-
   const results =
     query.trim().length > 0
       ? mangas
@@ -20,7 +18,6 @@ export default function SearchBar() {
           )
           .slice(0, 6)
       : [];
-
   useEffect(() => {
     function onClickOutside(e: MouseEvent) {
       if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
@@ -28,7 +25,6 @@ export default function SearchBar() {
     document.addEventListener("mousedown", onClickOutside);
     return () => document.removeEventListener("mousedown", onClickOutside);
   }, []);
-
   return (
     <div ref={ref} className="relative w-full max-w-xs">
       <input

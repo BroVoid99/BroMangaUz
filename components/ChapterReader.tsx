@@ -2,9 +2,9 @@
 
 import { useEffect, useCallback } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Chapter, Manga } from "@/lib/types";
-import { gradientForSeed } from "@/lib/covers";
 import { saveProgress } from "@/lib/reading-progress";
 
 export default function ChapterReader({
@@ -38,6 +38,7 @@ export default function ChapterReader({
       if (e.key === "ArrowLeft") goTo(prevNumber);
       if (e.key === "Escape") router.push(`/manga/${manga.slug}`);
     }
+
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [goTo, nextNumber, prevNumber, manga.slug, router]);
@@ -45,9 +46,13 @@ export default function ChapterReader({
   return (
     <div className="mx-auto max-w-3xl px-5 py-8">
       <div className="mb-6 flex items-center justify-between border-b border-line pb-4">
-        <Link href={`/manga/${manga.slug}`} className="font-display text-xl tracking-wide text-gold">
+        <Link
+          href={`/manga/${manga.slug}`}
+          className="font-display text-xl tracking-wide text-gold"
+        >
           {manga.title}
         </Link>
+
         <span className="font-mono text-xs text-parchment/50">
           Bob {chapter.number} / {manga.chapters.length}
         </span>
@@ -55,15 +60,17 @@ export default function ChapterReader({
 
       <div className="space-y-2">
         {chapter.pages.map((page) => (
-          <div
+          <Image
             key={page.index}
-            className="flex aspect-[2/3] w-full items-center justify-center border border-line"
-            style={{ background: gradientForSeed(`${manga.slug}-${chapter.number}-${page.index}`) }}
-          >
-            <span className="font-mono text-xs text-parchment/40">
-              {chapter.number}.{page.index} — sahifa rasmi hali yuklanmagan
-            </span>
-          </div>
+            src={`/chapters/${manga.slug}/${chapter.number}/${String(
+              page.index
+            ).padStart(3, "0")}.webp`}
+            alt={`${manga.title} Bob ${chapter.number} - Sahifa ${page.index}`}
+            width={900}
+            height={1400}
+            className="w-full h-auto rounded-sm"
+            unoptimized
+          />
         ))}
       </div>
 
@@ -75,9 +82,11 @@ export default function ChapterReader({
         >
           ← Oldingi bob
         </button>
+
         <span className="hidden font-mono text-xs text-parchment/40 sm:inline">
           ← / → tugmalari bilan navigatsiya
         </span>
+
         <button
           onClick={() => goTo(nextNumber)}
           disabled={nextNumber === null}

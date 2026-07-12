@@ -7,3 +7,11 @@ build/
 .DS_Store
 *.log
 .vercel
+
+raw-chapters/
+your-manhwa-slug-chapters.json
+
+public/chapters/
+
+raw-chapters/
+your-manhwa-slug-chapters.json

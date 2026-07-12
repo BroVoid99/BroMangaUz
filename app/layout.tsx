@@ -4,18 +4,17 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { AuthProvider } from "@/context/AuthContext";
+import { mangas } from "@/lib/data";
 
 const bebas = Bebas_Neue({
   subsets: ["latin"],
   weight: "400",
   variable: "--font-bebas"
 });
-
 const manrope = Manrope({
   subsets: ["latin"],
   variable: "--font-manrope"
 });
-
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
   variable: "--font-jetbrains"
@@ -47,7 +46,7 @@ export default function RootLayout({
     <html lang="uz" className={`${bebas.variable} ${manrope.variable} ${jetbrains.variable}`}>
       <body className="bg-ink text-parchment font-body antialiased selection:bg-gold selection:text-ink">
         <AuthProvider>
-          <Header />
+          <Header mangas={mangas} />
           <main className="min-h-screen">{children}</main>
           <Footer />
         </AuthProvider>

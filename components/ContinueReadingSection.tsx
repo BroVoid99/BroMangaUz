@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { getAllProgress, ReadingProgressEntry } from "@/lib/reading-progress";
-import { getMangaBySlug } from "@/lib/data";
+import { Manga } from "@/lib/types";
 import MangaCover from "./MangaCover";
 
-export default function ContinueReadingSection() {
+export default function ContinueReadingSection({ mangas }: { mangas: Manga[] }) {
   const [progress, setProgress] = useState<ReadingProgressEntry[] | null>(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function ContinueReadingSection() {
       </h2>
       <div className="flex gap-4 overflow-x-auto pb-2">
         {progress.slice(0, 6).map((p) => {
-          const manga = getMangaBySlug(p.slug);
+          const manga = mangas.find((m) => m.slug === p.slug);
           if (!manga) return null;
           return (
             <Link

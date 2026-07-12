@@ -16,15 +16,10 @@ export default function HomePage() {
   return (
     <div>
       <Hero featured={featured} />
-
-      <ContinueReadingSection />
-
+      <ContinueReadingSection mangas={mangas} />
       <TrendingSection mangas={trending} />
-
       <LatestUpdatesSection updates={updates} />
-
       <RankingSection mangas={topRated} title="Top reyting" />
-
       <div id="katalog" className="mx-auto max-w-6xl px-5 py-10">
         <h2 className="mb-5 font-display text-3xl tracking-wide text-parchment">
           Barcha <span className="text-gold">asarlar</span>

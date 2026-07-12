@@ -1,4 +1,4 @@
-import { gradientForSeed, initialsForTitle } from "@/lib/covers";
+import Image from "next/image";
 
 export default function MangaCover({
   seed,
@@ -11,13 +11,15 @@ export default function MangaCover({
 }) {
   return (
     <div
-      className={`torn-edge relative flex aspect-[2/3] items-center justify-center overflow-hidden ${className}`}
-      style={{ background: gradientForSeed(seed) }}
+      className={`relative aspect-[2/3] overflow-hidden rounded-md ${className}`}
     >
-      <span className="font-display text-5xl tracking-wide text-parchment/25">
-        {initialsForTitle(title)}
-      </span>
-      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/70 to-transparent" />
+      <Image
+        src={`/covers/${seed}.webp`}
+        alt={title}
+        fill
+        className="object-cover transition-transform duration-300 hover:scale-105"
+        sizes="300px"
+      />
     </div>
   );
 }
