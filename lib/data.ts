@@ -1,24 +1,28 @@
 import { Manga } from "./types";
-import fs from "fs";
-import path from "path";
 
 // public/chapters/{slug}/{chapterNumber}/ papkasidagi .webp fayllar sonini
 // o'qiydi. Agar papka hali mavjud bo'lmasa (bob hali yuklanmagan bo'lsa),
 // fallback sifatida berilgan sonni qaytaradi.
-function getRealPageCount(slug: string, chapterNumber: number, fallback: number): number {
-  try {
-    const dir = path.join(process.cwd(), "public", "chapters", slug, String(chapterNumber));
-    const files = fs.readdirSync(dir).filter((f) => f.endsWith(".webp"));
-    return files.length > 0 ? files.length : fallback;
-  } catch {
-    return fallback;
-  }
+function getRealPageCount(
+  slug: string,
+  chapterNumber: number,
+  fallback: number
+): number {
+  return fallback;
 }
 
-function makeChapters(slug: string, count: number, pagesPerChapter = 6) {
+function makeChapters(
+  slug: string,
+  count: number,
+  pagesPerChapter = 6
+) {
   return Array.from({ length: count }, (_, i) => {
     const number = i + 1;
-    const pageCount = getRealPageCount(slug, number, pagesPerChapter);
+    const pageCount = getRealPageCount(
+      slug,
+      number,
+      pagesPerChapter
+    );
 
     return {
       number,
@@ -26,7 +30,7 @@ function makeChapters(slug: string, count: number, pagesPerChapter = 6) {
       publishedAt: new Date(2026, 4, number).toISOString(),
       pages: Array.from({ length: pageCount }, (_, p) => ({
         index: p + 1,
-        imageUrl: "" // ChapterReader.tsx o'zi /chapters/{slug}/{number}/{index}.webp dan quradi
+        imageUrl: ""
       }))
     };
   });
