@@ -1,0 +1,67 @@
+// BroManga — ma'lumotlar bazasi sxemasi
+// Hozircha sayt statik placeholder data bilan ishlaydi (lib/data.ts)
+// Bu sxema real PostgreSQL bazasiga o'tish uchun tayyorlangan.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MangaStatus {
+  ONGOING
+  COMPLETED
+  HIATUS
+  DROPPED
+}
+
+model Manga {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  title       String
+  titleUz     String?
+  author      String      @default("BroVoid")
+  synopsis    String
+  coverUrl    String?
+  coverSeed   String      // used to deterministically generate gradient cover if no art yet
+  status      MangaStatus @default(ONGOING)
+  rating      Float       @default(0)
+  views       Int         @default(0)
+  genres      Genre[]     @relation("MangaGenres")
+  chapters    Chapter[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Genre {
+  id     String  @id @default(cuid())
+  name   String  @unique
+  slug   String  @unique
+  mangas Manga[] @relation("MangaGenres")
+}
+
+model Chapter {
+  id          String   @id @default(cuid())
+  mangaId     String
+  manga       Manga    @relation(fields: [mangaId], references: [id], onDelete: Cascade)
+  number      Float
+  title       String?
+  pages       Page[]
+  publishedAt DateTime @default(now())
+
+  @@unique([mangaId, number])
+  @@index([mangaId])
+}
+
+model Page {
+  id        String  @id @default(cuid())
+  chapterId String
+  chapter   Chapter @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  index     Int
+  imageUrl  String
+
+  @@unique([chapterId, index])
+}

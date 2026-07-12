@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+::selection {
+  background: #C9A227;
+  color: #0E0D10;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #0E0D10;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2730;
+  border-radius: 0;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C9A227;
+}
+
+@layer components {
+  /* Yirtilgan qog'oz chekkasi — muqova rasmlari uchun */
+  .torn-edge {
+    clip-path: polygon(
+      0% 2%, 4% 0%, 9% 3%, 15% 0%, 21% 2%, 27% 0%, 33% 3%, 39% 0%,
+      45% 2%, 51% 0%, 57% 3%, 63% 0%, 69% 2%, 75% 0%, 81% 3%, 87% 0%,
+      93% 2%, 100% 0%, 100% 98%, 96% 100%, 91% 97%, 85% 100%, 79% 98%,
+      73% 100%, 67% 97%, 61% 100%, 55% 98%, 49% 100%, 43% 97%, 37% 100%,
+      31% 98%, 25% 100%, 19% 97%, 13% 100%, 7% 98%, 0% 100%
+    );
+  }
+
+  /* Hanko muhr — yapon uslubidagi kvadrat belgi, holat ko'rsatkichi sifatida */
+  .hanko {
+    @apply inline-flex items-center justify-center border-2 border-seal text-seal font-display tracking-widest2 text-xs px-2 py-1 rotate-[-3deg];
+    background: rgba(139, 30, 36, 0.08);
+  }
+
+  .gold-underline {
+    background-image: linear-gradient(#C9A227, #C9A227);
+    background-size: 0% 2px;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    transition: background-size 0.25s ease;
+  }
+  .gold-underline:hover {
+    background-size: 100% 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
