@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 // Qaysi yo'llar himoyalanadi
 export const config = {
-  matcher: ["/admin/:path*", "/api/upload/:path*"]
+  matcher: ["/admin/:path*", "/api/upload/:path*", "/api/admin/:path*"]
 };
 
 export function middleware(req: NextRequest) {
