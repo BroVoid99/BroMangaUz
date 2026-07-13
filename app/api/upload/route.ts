@@ -5,7 +5,7 @@ import sharp from "sharp";
 import { upsertChapterWithPages } from "@/lib/db-chapters";
 
 export const runtime = "nodejs";
-export const maxDuration = 60; // katta PDF'lar uchun ko'proq vaqt
+export const maxDuration = 300; // Fluid Compute yoqilgani uchun Hobby'da ham 300s gacha ruxsat etiladi
 
 const WEBP_MAX_DIMENSION = 16383;
 const WEBP_QUALITY = 85;
