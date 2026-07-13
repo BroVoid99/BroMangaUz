@@ -1,47 +1,40 @@
-import { handleUpload, type 
-HandleUploadBody } from 
-"@vercel/blob/client";
+import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
 import { NextResponse } from "next/server";
+
 export const runtime = "nodejs";
+
 /**
-* Bu route faylni o'zi qabul qilmaydi — 
-faqat brauzerga Blob'ga
-* to'g'ridan-to'g'ri yuklash uchun 
-"ruxsat" (token) beradi.
-* Shu tarzda 15MB'lik PDF hech qachon 
-bizning serverless funksiyamiz
-* orqali o'tmaydi, shuning uchun 
-Vercel'ning 4.5MB so'rov limiti
-* muammo bo'lmaydi.
-*/
-export async function POST(request: 
-Request): Promise<NextResponse> {
-  const body = (await request.json()) as 
-HandleUploadBody;
+ * Bu route faylni o'zi qabul qilmaydi — faqat brauzerga Blob'ga
+ * to'g'ridan-to'g'ri yuklash uchun "ruxsat" (token) beradi.
+ * Shu tarzda katta PDF hech qachon bizning serverless funksiyamiz
+ * orqali o'tmaydi, shuning uchun Vercel'ning 4.5MB so'rov limiti
+ * muammo bo'lmaydi.
+ */
+export async function POST(request: Request): Promise<NextResponse> {
+  const body = (await request.json()) as HandleUploadBody;
   try {
-    const jsonResponse = await 
-handleUpload({
+    const jsonResponse = await handleUpload({
       body,
       request,
       onBeforeGenerateToken: async () => {
-        // TODO: bu yerda admin login/parol 
-tekshiruvini qo'shing,
-        // aks holda har kim vaqtinchalik 
-PDF yuklay oladi.
+        // TODO: bu yerda admin login/parol tekshiruvini qo'shing,
+        // aks holda har kim vaqtinchalik PDF yuklay oladi.
         return {
-          allowedContentTypes: 
-["application/pdf"],
+          allowedContentTypes: [
+            "application/pdf",
+            "application/zip",
+            "application/vnd.comicbook+zip",
+            "application/x-cbz",
+          ],
+          maximumSizeInBytes: 2 * 1024 * 1024 * 1024, // 2GB — amaliyotda yetarli
           addRandomSuffix: true,
-          tokenPayload: JSON.stringify({ 
-purpose: "chapter-pdf-temp" })
+          tokenPayload: JSON.stringify({ purpose: "chapter-pdf-temp" }),
         };
       },
       onUploadCompleted: async () => {
-        // Hech narsa qilish shart emas — 
-asosiy qayta ishlash
-        // /api/upload route'da, pdfUrl 
-orqali amalga oshadi.
-      }
+        // Hech narsa qilish shart emas — asosiy qayta ishlash
+        // /api/upload route'da, pdfUrl orqali amalga oshadi.
+      },
     });
     return NextResponse.json(jsonResponse);
   } catch (error) {

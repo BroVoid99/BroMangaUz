@@ -53,7 +53,7 @@ export default function AdminPage() {
 
     try {
       const res = await fetch(
-        /api/admin/chapter-pages?slug=${encodeURIComponent(manageSlug)}&number=${encodeURIComponent(manageChapterNumber)}
+        `/api/admin/chapter-pages?slug=${encodeURIComponent(manageSlug)}&number=${encodeURIComponent(manageChapterNumber)}`
       );
       const data = await res.json();
       setPagesLoading(false);
@@ -64,11 +64,11 @@ export default function AdminPage() {
           setPagesMessage("Bu bobda sahifalar topilmadi.");
         }
       } else {
-        setPagesMessage(❌ Xato: ${data.error});
+        setPagesMessage(`❌ Xato: ${data.error}`);
       }
     } catch (err: any) {
       setPagesLoading(false);
-      setPagesMessage(❌ Xato: ${err.message});
+      setPagesMessage(`❌ Xato: ${err.message}`);
     }
   }
 
@@ -85,7 +85,7 @@ export default function AdminPage() {
       const res = await fetch("/api/admin/chapter-pages", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pageId })
+        body: JSON.stringify({ pageId }),
       });
       const data = await res.json();
       setDeletingPageId(null);
@@ -94,11 +94,11 @@ export default function AdminPage() {
         setPagesMessage("✅ Sahifa o'chirildi.");
         await loadPages();
       } else {
-        setPagesMessage(❌ Xato: ${data.error});
+        setPagesMessage(`❌ Xato: ${data.error}`);
       }
     } catch (err: any) {
       setDeletingPageId(null);
-      setPagesMessage(❌ Xato: ${err.message});
+      setPagesMessage(`❌ Xato: ${err.message}`);
     }
   }
 
@@ -168,9 +168,13 @@ export default function AdminPage() {
               try {
                 // 1-qadam: fayl to'g'ridan-to'g'ri brauzerdan Blob'ga
                 // yuklanadi — bu bosqichda 4.5MB limiti YO'Q.
+                // multipart: true — katta fayllarni bo'laklarga bo'lib
+                // yuklaydi, shu bois "Request Entity Too Large" xatosi
+                // (ayniqsa telefondan katta PDF yuklaganda) chiqmaydi.
                 const blob = await upload(file.name, file, {
                   access: "public",
-                  handleUploadUrl: "/api/pdf-upload-token"
+                  handleUploadUrl: "/api/pdf-upload-token",
+                  multipart: true,
                 });
 
                 setMessage("PDF qayta ishlanmoqda (bir necha daqiqa davom etishi mumkin)...");
@@ -183,24 +187,29 @@ export default function AdminPage() {
                   body: JSON.stringify({
                     pdfUrl: blob.url,
                     slug,
-                    chapterNumber
-                  })
+                    chapterNumber,
+                  }),
                 });
                 const data = await res.json();
                 setLoading(false);
 
                 if (data.success) {
                   setMessage(
-                    ✅ Bob ${data.chapterNumber} muvaffaqiyatli yuklandi (${data.pageCount} sahifa)
+                    `✅ Bob ${data.chapterNumber} muvaffaqiyatli yuklandi (${data.pageCount} sahifa)`
                   );
                   setFile(null);
                   setChapterNumber("");
                 } else {
-                  setMessage(❌ Xato: ${data.error});
+                  setMessage(`❌ Xato: ${data.error}`);
                 }
               } catch (err: any) {
                 setLoading(false);
-                setMessage(❌ Xato: ${err.message});
+                const msg =
+                  err.message?.includes("Entity Too Large") ||
+                  err.message?.includes("not valid JSON")
+                    ? "Fayl juda katta yoki tarmoq uzilib qoldi. Kichikroq fayl bilan yoki Wi-Fi orqali urinib ko'ring."
+                    : err.message;
+                setMessage(`❌ Xato: ${msg}`);
               }
             }}
             className="w-full rounded-lg bg-yellow-500 py-3 font-bold text-black disabled:opacity-50"
@@ -213,14 +222,12 @@ export default function AdminPage() {
           )}
         </div>
       </div>
-
       {/* --- Sahifalarni boshqarish bo'limi --- */}
       <div className="mt-10 rounded-xl border border-gray-700 bg-zinc-900 p-6">
         <h2 className="mb-6 text-2xl font-semibold">Sahifalarni boshqarish</h2>
         <p className="mb-4 text-sm text-gray-400">
           Yuklangan bobdan keraksiz sahifani (masalan, xato skanerlangan varaqni) o'chirish uchun.
         </p>
-
         <div className="flex flex-col gap-4 sm:flex-row">
           <select
             value={manageSlug}
@@ -240,7 +247,6 @@ export default function AdminPage() {
             placeholder="Bob raqami"
             className="flex-1 rounded-lg border border-gray-700 bg-black p-3"
           />
-
           <button
             onClick={loadPages}
             disabled={pagesLoading}
@@ -260,7 +266,7 @@ export default function AdminPage() {
               <div key={p.id} className="rounded-lg border border-gray-700 bg-black p-2">
                 <img
                   src={p.imageUrl}
-                  alt={Sahifa ${p.index}}
+                  alt={`Sahifa ${p.index}`}
                   className="mb-2 h-40 w-full rounded object-cover"
                 />
                 <p className="mb-2 text-center text-xs text-gray-400">Sahifa {p.index}</p>
