@@ -106,9 +106,11 @@ export async function POST(req: Request) {
             fit: "inside",
             withoutEnlargement: true
           });
-        }const webpBuffer = await pipeline.webp({ quality: WEBP_QUALITY }).toBuffer();
+        }
 
-        const pageFileName = chapters/${slug}/${chapterNumber}/${String(pageNum).padStart(3, "0")}.webp;
+        const webpBuffer = await pipeline.webp({ quality: WEBP_QUALITY }).toBuffer();
+
+        const pageFileName = `chapters/${slug}/${chapterNumber}/${String(pageNum).padStart(3, "0")}.webp`;
         const blob = await put(pageFileName, webpBuffer, {
           access: "public",
           addRandomSuffix: false,
