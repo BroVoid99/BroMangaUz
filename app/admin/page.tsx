@@ -1,6 +1,7 @@
 "use client";
-import { useState } from "react";
 
+import { useState } from "react";
+import { upload } from "@vercel/blob/client";
 const MANGA_OPTIONS = [
   { slug: "reality-quest", label: "Reality Quest" },
   { slug: "viral-hit", label: "Viral Hit" },
@@ -8,11 +9,6 @@ const MANGA_OPTIONS = [
   { slug: "fake-girlfriend", label: "Fake Girlfriend" },
   { slug: "absolute-sword-sense", label: "Absolute Sword Sense" }
 ];
-
-"use client";
-
-import { useState } from "react";
-import { upload } from "@vercel/blob/client";
 
 // ⚠️ BU YERGA sizning eski faylingizdagi MANGA_OPTIONS ro'yxatini
 // (const MANGA_OPTIONS = [ { slug: "...", label: "..." }, ... ];)
