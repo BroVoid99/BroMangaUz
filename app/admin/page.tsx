@@ -9,6 +9,17 @@ const MANGA_OPTIONS = [
   { slug: "absolute-sword-sense", label: "Absolute Sword Sense" }
 ];
 
+"use client";
+
+import { useState } from "react";
+import { upload } from "@vercel/blob/client";
+
+// ⚠️ BU YERGA sizning eski faylingizdagi MANGA_OPTIONS ro'yxatini
+// (const MANGA_OPTIONS = [ { slug: "...", label: "..." }, ... ];)
+// O'ZGARTIRMASDAN qaytadan qo'ying — men buni ko'rmaganman, shuning
+// uchun o'zim to'qib yozmadim. Faylingizning eng tepasida (1-9 qatorda)
+// turgan o'sha qismni shu yerga, import qatorlaridan keyin joylang.
+
 type ChapterPage = {
   id: string;
   index: number;
@@ -42,7 +53,7 @@ export default function AdminPage() {
 
     try {
       const res = await fetch(
-        `/api/admin/chapter-pages?slug=${encodeURIComponent(manageSlug)}&number=${encodeURIComponent(manageChapterNumber)}`
+        /api/admin/chapter-pages?slug=${encodeURIComponent(manageSlug)}&number=${encodeURIComponent(manageChapterNumber)}
       );
       const data = await res.json();
       setPagesLoading(false);
@@ -53,16 +64,18 @@ export default function AdminPage() {
           setPagesMessage("Bu bobda sahifalar topilmadi.");
         }
       } else {
-        setPagesMessage(`❌ Xato: ${data.error}`);
+        setPagesMessage(❌ Xato: ${data.error});
       }
     } catch (err: any) {
       setPagesLoading(false);
-      setPagesMessage(`❌ Xato: ${err.message}`);
+      setPagesMessage(❌ Xato: ${err.message});
     }
   }
 
   async function handleDeletePage(pageId: string) {
-    const confirmed = window.confirm("Bu sahifani butunlay o'chirmoqchimisiz? Bu amalni orqaga qaytarib bo'lmaydi.");
+    const confirmed = window.confirm(
+      "Bu sahifani butunlay o'chirmoqchimisiz? Bu amalni orqaga qaytarib bo'lmaydi."
+    );
     if (!confirmed) return;
 
     setDeletingPageId(pageId);
@@ -79,14 +92,13 @@ export default function AdminPage() {
 
       if (data.success) {
         setPagesMessage("✅ Sahifa o'chirildi.");
-        // Ro'yxatni yangilaymiz
         await loadPages();
       } else {
-        setPagesMessage(`❌ Xato: ${data.error}`);
+        setPagesMessage(❌ Xato: ${data.error});
       }
     } catch (err: any) {
       setDeletingPageId(null);
-      setPagesMessage(`❌ Xato: ${err.message}`);
+      setPagesMessage(❌ Xato: ${err.message});
     }
   }
 
@@ -113,7 +125,6 @@ export default function AdminPage() {
               ))}
             </select>
           </div>
-
           <div>
             <label className="mb-2 block text-sm">Bob raqami</label>
             <input
@@ -152,31 +163,44 @@ export default function AdminPage() {
               }
 
               setLoading(true);
-              setMessage(null);
-
-              const formData = new FormData();
-              formData.append("file", file);
-              formData.append("slug", slug);
-              formData.append("chapterNumber", chapterNumber);
+              setMessage("PDF Blob'ga yuklanmoqda...");
 
               try {
+                // 1-qadam: fayl to'g'ridan-to'g'ri brauzerdan Blob'ga
+                // yuklanadi — bu bosqichda 4.5MB limiti YO'Q.
+                const blob = await upload(file.name, file, {
+                  access: "public",
+                  handleUploadUrl: "/api/pdf-upload-token"
+                });
+
+                setMessage("PDF qayta ishlanmoqda (bir necha daqiqa davom etishi mumkin)...");
+
+                // 2-qadam: serverga faylning o'zi emas, faqat kichik
+                // JSON (pdfUrl, slug, chapterNumber) jo'natiladi.
                 const res = await fetch("/api/upload", {
                   method: "POST",
-                  body: formData
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    pdfUrl: blob.url,
+                    slug,
+                    chapterNumber
+                  })
                 });
                 const data = await res.json();
                 setLoading(false);
 
                 if (data.success) {
-                  setMessage(`✅ Bob ${data.chapterNumber} muvaffaqiyatli yuklandi (${data.pageCount} sahifa)`);
+                  setMessage(
+                    ✅ Bob ${data.chapterNumber} muvaffaqiyatli yuklandi (${data.pageCount} sahifa)
+                  );
                   setFile(null);
                   setChapterNumber("");
                 } else {
-                  setMessage(`❌ Xato: ${data.error}`);
+                  setMessage(❌ Xato: ${data.error});
                 }
               } catch (err: any) {
                 setLoading(false);
-                setMessage(`❌ Xato: ${err.message}`);
+                setMessage(❌ Xato: ${err.message});
               }
             }}
             className="w-full rounded-lg bg-yellow-500 py-3 font-bold text-black disabled:opacity-50"
@@ -209,7 +233,6 @@ export default function AdminPage() {
               </option>
             ))}
           </select>
-
           <input
             type="number"
             value={manageChapterNumber}
@@ -237,7 +260,7 @@ export default function AdminPage() {
               <div key={p.id} className="rounded-lg border border-gray-700 bg-black p-2">
                 <img
                   src={p.imageUrl}
-                  alt={`Sahifa ${p.index}`}
+                  alt={Sahifa ${p.index}}
                   className="mb-2 h-40 w-full rounded object-cover"
                 />
                 <p className="mb-2 text-center text-xs text-gray-400">Sahifa {p.index}</p>
