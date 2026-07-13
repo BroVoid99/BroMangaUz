@@ -62,9 +62,11 @@ export default function ChapterReader({
         {chapter.pages.map((page) => (
           <Image
             key={page.index}
-            src={`/chapters/${manga.slug}/${chapter.number}/${String(
-              page.index
-            ).padStart(3, "0")}.webp`}
+            src={
+              page.imageUrl && page.imageUrl.length > 0
+                ? page.imageUrl
+                : `/chapters/${manga.slug}/${chapter.number}/${String(page.index).padStart(3, "0")}.webp`
+            }
             alt={`${manga.title} Bob ${chapter.number} - Sahifa ${page.index}`}
             width={900}
             height={1400}
@@ -83,8 +85,8 @@ export default function ChapterReader({
           ← Oldingi bob
         </button>
 
-        <span className="hidden font-mono text-xs text-parchment/40 sm:inline">
-          ← / → tugmalari bilan navigatsiya
+        <span className="font-mono text-xs text-parchment/40">
+          ←→ tugmalari bilan navigatsiya
         </span>
 
         <button
